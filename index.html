@@ -512,12 +512,132 @@
             .glass-button { padding: 10px 20px; font-size: 13px; }
             .album-item { min-height: 120px; padding: 15px 10px; }
             .form-group input, .form-group textarea { padding: 10px 12px; }
+            #player-view { padding: 10px; }
+            #player-view.style-simple #album-art { width: 180px !important; height: 180px !important; }
+            #player-view.style-cloud #album-art { width: 140px !important; height: 140px !important; }
+            .player-top-bar .right-controls { gap: 6px; }
+            .player-top-bar .right-controls button { width: 36px; height: 36px; font-size: 16px; }
+            .main-controls { gap: 20px; }
+            #play-pause-btn { width: 52px; height: 52px; font-size: 20px; }
+            #prev-btn, #next-btn { font-size: 28px; }
+            .extra-controls { gap: 12px; }
+            .extra-controls button { font-size: 16px; padding: 8px 10px; }
+            .volume-control { flex-wrap: wrap; justify-content: center; }
+            #volume-slider { width: 60px; }
+            .lyric-bubble { padding: 12px 15px; width: 95% !important; }
+            .lyric-bubble p { font-size: 14px !important; }
+            .simple-title-box { top: 8%; }
+            #song-title-box { font-size: 12px; padding: 6px 12px; }
+            #player-view.style-cloud .lyric-scroll-container { height: 45vh !important; max-height: 45vh !important; padding: 15px; }
+            #player-view.style-cloud .lyric-scroll-line { padding: 8px 12px; font-size: 14px; }
+            #player-view.style-cloud .lyric-scroll-line.active { font-size: 16px; }
+            .cloud-title-box { margin-bottom: 12px; }
+            .cloud-title-box #song-title-box { font-size: 14px; }
+            #style-switch-menu, #player-settings-menu, #image-settings-menu { min-width: 130px; right: -5px; }
+            .style-menu-item a { padding: 8px 10px; font-size: 13px; }
+            .mode-display-settings { min-width: 200px; right: -10px; }
+            .slider-control { margin-bottom: 10px; }
+            .slider-control label { font-size: 12px; }
+            .progress-bar-container { gap: 8px; font-size: 11px; }
+            #progress-bar { height: 4px; }
+            #progress-bar::-webkit-slider-thumb { width: 14px; height: 14px; }
+            .full-lyric-line { padding: 10px 5px; font-size: 16px; }
+            .full-lyric-line.active { font-size: 20px; }
+            .close-lyrics-btn { width: 40px; height: 40px; font-size: 20px; }
+            .bottom-player-content { padding: 6px 10px; gap: 8px; min-height: 56px; }
+            #bottom-player-art { width: 40px; height: 40px; }
+            #bottom-player-title { font-size: 12px; }
+            #bottom-player-subtitle { font-size: 10px; }
+            .bottom-control-btn { width: 32px; height: 32px; font-size: 14px; }
+            .bottom-control-btn.play-btn { width: 38px; height: 38px; font-size: 12px; }
+            #bottom-player-lyric { font-size: 11px; padding: 3px 8px; }
+            .bottom-player-progress-area { padding: 4px 8px; }
+            #bottom-progress { height: 3px; }
+            #bottom-progress::-webkit-slider-thumb { width: 12px; height: 12px; }
+            .bottom-time { font-size: 9px; }
+            .audio-action-btn { width: 28px; height: 28px; font-size: 12px; }
+            .audio-cover { width: 44px; height: 44px; }
+            .audio-item { padding: 10px 12px; }
+            .audio-title { font-size: 13px; }
+            .audio-meta { font-size: 11px; }
+            .modal-content { padding: 20px; width: 95% !important; }
+            .modal-content h3 { font-size: 16px; }
+            .modal-buttons button { padding: 10px; font-size: 14px; }
+            .app-header { padding: 12px 15px; }
+            .app-header h1 { font-size: calc(var(--global-font-size) + 2px); }
+            .app-header .back-btn { font-size: 32px; padding: 4px 10px; }
+            .app-header .header-action { font-size: 20px; }
+            .beautify-section { padding: 15px; }
+            .beautify-section h2 { font-size: 14px; }
+            .view-controls { flex-direction: column; align-items: stretch; gap: 8px; }
+            .mode-switch { justify-content: center; }
+            .mode-btn { padding: 6px 12px; font-size: 12px; }
+            .sort-control { justify-content: center; }
+            .sort-control label { font-size: 12px; }
+            .sort-control select { padding: 5px 10px; font-size: 12px; }
+            .sort-order-btn { width: 28px; height: 28px; font-size: 14px; }
+            .disc-item { min-width: 85px; padding: 12px; }
+            .disc-icon { width: 50px; height: 50px; font-size: 28px; }
+            .disc-name { font-size: 12px; }
+            .batch-toolbar { padding: 10px 15px; gap: 10px; bottom: 80px; }
+            .batch-toolbar button { padding: 6px 12px; font-size: 12px; }
+            .glass-settings-panel { min-width: 180px; right: 10px; }
+            .glass-settings-title { font-size: 13px; }
+            .glass-setting-item label { font-size: 10px; }
+            .glass-slider-row span { font-size: 10px; min-width: 30px; }
+            #color-picker { top: 55px; right: 10px; padding: 10px; gap: 8px; }
+            .color-swatch { width: 28px; height: 28px; }
+            .color-menu-item { padding: 8px 12px; font-size: 12px; }
+            .menu-section-title { font-size: 11px; }
+            .speed-control { padding: 6px 10px; }
+            .speed-control select { padding: 4px 8px; font-size: 12px; }
+            #global-search-input { width: 220px; font-size: 13px; padding: 8px 12px; }
+            #global-search-input:focus { width: 260px; }
+            .search-results-dropdown { width: 260px; max-height: 250px; }
+            .search-result-item { padding: 10px 12px; }
+            .search-result-item .result-title { font-size: 13px; }
+            .search-result-item .result-subtitle { font-size: 11px; }
         }
         @media (min-width: 481px) and (max-width: 1024px) {
             .album-grid { grid-template-columns: repeat(2, 1fr); }
             .desktop-time { font-size: 64px; }
             .app-dock { grid-template-columns: repeat(3, 1fr); gap: 18px; }
             .bottom-player-text { max-width: 120px; }
+            #player-view { padding: 15px; }
+            #player-view.style-simple #album-art { width: 200px !important; height: 200px !important; }
+            #player-view.style-cloud #album-art { width: 180px !important; height: 180px !important; }
+            .player-top-bar .right-controls { gap: 8px; }
+            .player-top-bar .right-controls button { width: 38px; height: 38px; font-size: 17px; }
+            .main-controls { gap: 22px; }
+            #play-pause-btn { width: 56px; height: 56px; font-size: 22px; }
+            #prev-btn, #next-btn { font-size: 30px; }
+            .extra-controls { gap: 15px; }
+            .lyric-bubble { padding: 12px 18px; }
+            .lyric-bubble p { font-size: 15px !important; }
+            #song-title-box { font-size: 13px; }
+            #player-view.style-cloud .lyric-scroll-container { height: 55vh !important; max-height: 55vh !important; }
+            #player-view.style-cloud .lyric-scroll-line { font-size: 15px; }
+            #player-view.style-cloud .lyric-scroll-line.active { font-size: 17px; }
+            .full-lyric-line { font-size: 17px; }
+            .full-lyric-line.active { font-size: 22px; }
+            .bottom-player-content { padding: 7px 12px; gap: 10px; }
+            #bottom-player-art { width: 42px; height: 42px; }
+            .bottom-control-btn { width: 34px; height: 34px; font-size: 15px; }
+            .bottom-control-btn.play-btn { width: 40px; height: 40px; font-size: 13px; }
+            .audio-action-btn { width: 30px; height: 30px; font-size: 13px; }
+            .audio-cover { width: 48px; height: 48px; }
+            .modal-content { padding: 22px; }
+            .app-header { padding: 14px 18px; }
+            .beautify-section { padding: 18px; }
+            .view-controls { flex-wrap: wrap; }
+            .disc-item { min-width: 95px; padding: 14px; }
+            .disc-icon { width: 55px; height: 55px; }
+            .glass-settings-panel { min-width: 200px; }
+            #color-picker { padding: 12px; gap: 10px; }
+            .color-swatch { width: 30px; height: 30px; }
+            #global-search-input { width: 250px; }
+            #global-search-input:focus { width: 300px; }
+            .search-results-dropdown { width: 300px; }
         }
         @media (min-width: 1025px) {
             .album-grid { grid-template-columns: repeat(3, 1fr); }
@@ -683,14 +803,14 @@
                     </div>
                     <div class="menu-section">
                         <div class="menu-section-title">睡眠定时器</div>
-                        <a href="#" data-time="0">关闭</a>
-                        <a href="#" data-time="15">15 分钟后</a>
-                        <a href="#" data-time="30">30 分钟后</a>
-                        <a href="#" data-time="60">60 分钟后</a>
-                        <a href="#" data-time="-1">当前歌曲播放完后</a>
+                        <div class="style-menu-item"><a href="#" data-time="0">关闭</a></div>
+                        <div class="style-menu-item"><a href="#" data-time="15">15 分钟后</a></div>
+                        <div class="style-menu-item"><a href="#" data-time="30">30 分钟后</a></div>
+                        <div class="style-menu-item"><a href="#" data-time="60">60 分钟后</a></div>
+                        <div class="style-menu-item"><a href="#" data-time="-1">当前歌曲播放完后</a></div>
                     </div>
                     <div class="menu-section">
-                        <a href="#" id="toggle-continuous-play">连续播放: 关闭</a>
+                        <div class="style-menu-item"><a href="#" id="toggle-continuous-play">连续播放: 关闭</a></div>
                     </div>
                 </div>
                 <div id="style-switch-menu">

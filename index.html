@@ -205,7 +205,9 @@
         
         .sidebar { position: fixed; right: 15px; top: 15px; width: 50px; height: 50px; background: linear-gradient(135deg, rgba(var(--card-color-rgb, 40, 40, 60), 0.9), rgba(var(--card-color-rgb, 25, 25, 40), 0.95)); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 100; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 20px rgba(0,0,0,0.3); cursor: pointer; overflow: hidden; }
         .sidebar.open { width: 220px; height: auto; max-height: 80vh; border-radius: 16px; cursor: default; flex-direction: column; padding: 15px 0; }
-        .sidebar-toggle { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 24px; transition: all 0.3s; }
+        .sidebar-toggle { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 24px; transition: all 0.3s; cursor: grab; user-select: none; touch-action: none; }
+        .sidebar-toggle:active { cursor: grabbing; }
+        .sidebar-toggle.dragging { cursor: grabbing; opacity: 0.8; }
         .sidebar.open .sidebar-toggle { display: none; }
         .sidebar-header { display: none; padding: 10px 15px; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); width: 100%; }
         .sidebar.open .sidebar-header { display: flex; justify-content: space-between; align-items: center; }
@@ -854,8 +856,26 @@
         }
         @media (max-width: 480px) {
             .album-grid { grid-template-columns: 1fr; }
-            .desktop-time { font-size: 56px; }
-            .desktop-date { font-size: 18px; }
+            #desktop-view { padding: 10px; overflow-y: auto; }
+            .desktop-time { font-size: 36px; }
+            .desktop-date { font-size: 14px; margin-top: 0; }
+            .desktop-header { margin-top: 5px; margin-bottom: 0; flex-shrink: 0; }
+            .desktop-search-container { margin-top: 5px; }
+            .desktop-main { padding: 8px; gap: 10px; flex-shrink: 0; min-height: auto; overflow-y: auto; }
+            .desktop-content { min-height: auto; }
+            .quick-actions { margin-top: 10px; gap: 8px; }
+            .quick-action-card { padding: 10px; min-height: auto; }
+            .quick-action-icon { font-size: 22px; margin-bottom: 2px; }
+            .quick-action-title { font-size: 11px; }
+            .quick-action-desc { font-size: 9px; }
+            .stats-card { margin-top: 8px; padding: 10px; }
+            .stats-grid { gap: 8px; }
+            .stat-value { font-size: 16px; }
+            .recent-play-section { margin-top: 8px; }
+            .recent-play-header { margin-bottom: 8px; }
+            .recent-play-header h3 { font-size: 14px; }
+            .recent-play-list { gap: 8px; }
+            .recent-play-item { padding: 8px; }
             .app-dock { gap: 15px; }
             .bottom-player-text { max-width: 80px; }
             .glass-button { padding: 12px 20px; font-size: 14px; min-height: 44px; }
@@ -950,7 +970,12 @@
         }
         @media (min-width: 481px) and (max-width: 1024px) {
             .album-grid { grid-template-columns: repeat(2, 1fr); }
-            .desktop-time { font-size: 64px; }
+            #desktop-view { padding: 15px; overflow-y: auto; }
+            .desktop-time { font-size: 52px; }
+            .desktop-date { font-size: 18px; }
+            .desktop-header { margin-top: 10px; }
+            .desktop-main { padding: 12px; gap: 15px; min-height: auto; }
+            .quick-actions { margin-top: 15px; }
             .app-dock { grid-template-columns: repeat(3, 1fr); gap: 18px; }
             .bottom-player-text { max-width: 120px; }
             #player-view { padding: 15px; }
@@ -996,8 +1021,10 @@
         }
         @media (min-width: 481px) and (max-width: 1024px) and (orientation: landscape) {
             .album-grid { grid-template-columns: repeat(3, 1fr); }
-            .desktop-time { font-size: 48px; }
-            .desktop-date { font-size: 16px; }
+            .desktop-time { font-size: 40px; }
+            .desktop-date { font-size: 14px; }
+            .desktop-header { margin-top: 5px; }
+            .desktop-main { padding: 8px; gap: 10px; }
             #player-view.style-simple #album-art { width: 160px !important; height: 160px !important; }
             #player-view.style-cloud #album-art { width: 140px !important; height: 140px !important; }
             #player-view.style-cloud .lyric-scroll-container { height: 50vh !important; max-height: 50vh !important; }
@@ -1010,6 +1037,8 @@
         @media (min-width: 481px) and (max-width: 1024px) and (orientation: portrait) {
             .album-grid { grid-template-columns: repeat(2, 1fr); }
             .quick-actions { grid-template-columns: repeat(2, 1fr); }
+            .desktop-time { font-size: 48px; }
+            .desktop-main { padding: 10px; }
         }
         @media (min-width: 1025px) {
             .album-grid { grid-template-columns: repeat(3, 1fr); }
@@ -8987,9 +9016,88 @@
                 closeSidebar();
             });
             
-            document.getElementById('sidebar-toggle')?.addEventListener('click', () => {
-                openSidebar();
-            });
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebar = document.getElementById('main-sidebar');
+            let isDragging = false;
+            let dragStartX = 0;
+            let dragStartY = 0;
+            let sidebarStartRight = 15;
+            let sidebarStartTop = 15;
+            let hasMoved = false;
+            const DRAG_THRESHOLD = 5;
+
+            if (sidebarToggle && sidebar) {
+                sidebarToggle.addEventListener('mousedown', startDrag);
+                sidebarToggle.addEventListener('touchstart', startDrag, { passive: false });
+                
+                function startDrag(e) {
+                    if (sidebar.classList.contains('open')) return;
+                    
+                    isDragging = true;
+                    hasMoved = false;
+                    sidebarToggle.classList.add('dragging');
+                    
+                    const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+                    const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+                    
+                    dragStartX = clientX;
+                    dragStartY = clientY;
+                    
+                    const rect = sidebar.getBoundingClientRect();
+                    sidebarStartRight = window.innerWidth - rect.right;
+                    sidebarStartTop = rect.top;
+                    
+                    document.addEventListener('mousemove', onDrag);
+                    document.addEventListener('mouseup', endDrag);
+                    document.addEventListener('touchmove', onDrag, { passive: false });
+                    document.addEventListener('touchend', endDrag);
+                    
+                    e.preventDefault();
+                }
+                
+                function onDrag(e) {
+                    if (!isDragging) return;
+                    
+                    const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+                    const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+                    
+                    const deltaX = dragStartX - clientX;
+                    const deltaY = clientY - dragStartY;
+                    
+                    if (Math.abs(deltaX) > DRAG_THRESHOLD || Math.abs(deltaY) > DRAG_THRESHOLD) {
+                        hasMoved = true;
+                    }
+                    
+                    if (hasMoved) {
+                        let newRight = sidebarStartRight + deltaX;
+                        let newTop = sidebarStartTop + deltaY;
+                        
+                        newRight = Math.max(0, Math.min(newRight, window.innerWidth - 60));
+                        newTop = Math.max(0, Math.min(newTop, window.innerHeight - 60));
+                        
+                        sidebar.style.right = newRight + 'px';
+                        sidebar.style.top = newTop + 'px';
+                    }
+                    
+                    e.preventDefault();
+                }
+                
+                function endDrag(e) {
+                    if (!isDragging) return;
+                    
+                    isDragging = false;
+                    sidebarToggle.classList.remove('dragging');
+                    
+                    document.removeEventListener('mousemove', onDrag);
+                    document.removeEventListener('mouseup', endDrag);
+                    document.removeEventListener('touchmove', onDrag);
+                    document.removeEventListener('touchend', endDrag);
+                    
+                    if (!hasMoved) {
+                        openSidebar();
+                    }
+                }
+            }
             
             document.getElementById('sidebar-close')?.addEventListener('click', () => {
                 closeSidebar();

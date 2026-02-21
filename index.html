@@ -5093,6 +5093,7 @@
         }
 
         function openEditAudioDialog(audio) {
+            console.log('[DEBUG] openEditAudioDialog - audio.lyrics:', audio.lyrics ? `有内容(${audio.lyrics.length}字符)` : '空');
             editingAudioId = audio.id;
             document.getElementById('audio-dialog-title').textContent = '编辑音频';
             document.getElementById('audio-title-input').value = audio.title;
@@ -5134,6 +5135,7 @@
             }
             isSubmitting = true;
             const lyrics = document.getElementById('audio-lyric-input').value;
+            console.log('[DEBUG] handleAudioConfirm - lyrics值:', lyrics ? `有内容(${lyrics.length}字符)` : '空');
             const trackNumber = parseInt(document.getElementById('audio-track-input').value) || null;
             const artist = document.getElementById('audio-artist-input').value.trim();
             const composer = document.getElementById('audio-composer-input').value.trim();
@@ -5178,6 +5180,7 @@
                 }
                 if (editingAudioId) {
                     const updateData = { title, lyrics, trackNumber, artist, composer, lyricist, circle, updatedAt: Date.now() };
+                    console.log('[DEBUG] 编辑模式 - updateData.lyrics:', updateData.lyrics ? `有内容(${updateData.lyrics.length}字符)` : '空');
                     if (audioData.audioFile) updateData.audioFile = audioData.audioFile;
                     if (audioData.audioSource) {
                         updateData.audioType = audioData.audioType;
@@ -5186,6 +5189,8 @@
                     if (audioData.imageFile) updateData.imageFile = audioData.imageFile;
                     if (audioData.artistImage) updateData.artistImage = audioData.artistImage;
                     await db.audios.update(editingAudioId, updateData);
+                    const savedAudio = await db.audios.get(editingAudioId);
+                    console.log('[DEBUG] 保存后验证 - 数据库中的lyrics:', savedAudio?.lyrics ? `有内容(${savedAudio.lyrics.length}字符)` : '空');
                     showToast('音频更新成功');
                 } else {
                     await db.audios.add(audioData);
@@ -8492,7 +8497,9 @@
                 if (file) {
                     const reader = new FileReader();
                     reader.onload = (event) => {
+                        console.log('[DEBUG] 导入歌词 - 内容:', event.target.result ? `有内容(${event.target.result.length}字符)` : '空');
                         document.getElementById('audio-lyric-input').value = event.target.result;
+                        console.log('[DEBUG] 导入歌词后 - 输入框值:', document.getElementById('audio-lyric-input').value ? `有内容` : '空');
                     };
                     reader.readAsText(file);
                 }

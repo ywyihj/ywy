@@ -574,8 +574,8 @@
         .close-lyrics-btn { background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.08)); border: 1px solid rgba(255,255,255,0.2); color: white; font-size: 24px; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
         .close-lyrics-btn:hover { transform: scale(1.1); background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1)); }
         .full-lyrics-container { flex-grow: 1; overflow-y: auto; padding: 20px; text-align: center; -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent); mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent); }
-        .full-lyric-line { padding: 12px 5px; color: #666; font-size: 18px; transition: all 0.3s; cursor: pointer; }
-        .full-lyric-line.active { color: var(--lyric-color); font-size: 24px; font-weight: bold; text-shadow: 0 0 10px rgba(255,255,255,0.3); transform: scale(1.05); }
+        .full-lyric-line { padding: 12px 5px; color: #666; font-size: 18px; transition: color 0.3s, font-size 0.3s, font-weight 0.3s, text-shadow 0.3s; cursor: pointer; }
+        .full-lyric-line.active { color: var(--lyric-color); font-size: 24px; font-weight: bold; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
         #bottom-player { position: fixed; bottom: 0; left: 0; width: 100%; background: linear-gradient(180deg, rgba(var(--card-color-rgb, 25, 25, 35), 0.95), rgba(var(--card-color-rgb, 15, 15, 25), 0.98)); backdrop-filter: blur(40px) saturate(180%); -webkit-backdrop-filter: blur(40px) saturate(180%); border-top: 1px solid rgba(255,255,255,0.08); box-shadow: 0 -10px 50px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06); z-index: 1000; transform: translateY(0); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding-bottom: env(safe-area-inset-bottom, 0px); }
         #bottom-player.hidden-player { transform: translateY(100%); }
         .bottom-player-content { display: flex; align-items: center; padding: 8px 12px; max-width: 768px; margin: 0 auto; gap: 10px; height: auto; min-height: 60px; box-sizing: border-box; flex-wrap: wrap; }
@@ -2647,6 +2647,7 @@
         let currentAlbumId = null;
         let currentDiscId = null;
         let currentLyrics = [];
+        let lastFullLyricIndex = -1;
         let currentPlayerStyle = 'simple';
         let playerPreviousView = 'desktop-view';
         let sleepTimerId = null;
@@ -5665,8 +5666,10 @@
                 }
                 if (audio.lyrics) {
                     currentLyrics = parseLyrics(audio.lyrics);
+                    lastFullLyricIndex = -1;
                 } else {
                     currentLyrics = [];
+                    lastFullLyricIndex = -1;
                 }
                 const fullLyricsList = document.getElementById('full-lyrics-list');
                 if (fullLyricsList && currentLyrics.length > 0) {
@@ -5935,10 +5938,11 @@
                 fullLyricsList.innerHTML = '<div class="full-lyric-line" style="color:#666;text-align:center;padding:40px;">暂无歌词</div>';
             }
             document.getElementById('full-lyrics-modal').classList.add('active');
-            scrollToCurrentFullLyric();
+            lastFullLyricIndex = -1;
+            scrollToCurrentFullLyric(true);
         }
 
-        function scrollToCurrentFullLyric() {
+        function scrollToCurrentFullLyric(force = false) {
             const audioPlayer = document.getElementById('audio-player');
             const fullLyricsList = document.getElementById('full-lyrics-list');
             if (!audioPlayer || !fullLyricsList || currentLyrics.length === 0) return;
@@ -5950,7 +5954,8 @@
                     break;
                 }
             }
-            if (activeIndex >= 0) {
+            if (activeIndex >= 0 && (force || activeIndex !== lastFullLyricIndex)) {
+                lastFullLyricIndex = activeIndex;
                 const activeLine = fullLyricsList.querySelector(`.full-lyric-line[data-index="${activeIndex}"]`);
                 if (activeLine) {
                     activeLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -6269,9 +6274,11 @@
 
             updateLyricDisplay(currentTime) {
                 let activeLine = null;
+                let activeIndex = -1;
                 for (let i = currentLyrics.length - 1; i >= 0; i--) {
                     if (currentTime >= currentLyrics[i].startTime) {
                         activeLine = currentLyrics[i];
+                        activeIndex = i;
                         break;
                     }
                 }
@@ -6290,6 +6297,15 @@
                 document.querySelectorAll('.lyric-scroll-line, .full-lyric-line').forEach((line, i) => {
                     line.classList.toggle('active', currentLyrics[i] && currentTime >= currentLyrics[i].startTime && (!currentLyrics[i].endTime || currentTime < currentLyrics[i].endTime));
                 });
+                const fullLyricsModal = document.getElementById('full-lyrics-modal');
+                if (fullLyricsModal?.classList.contains('active') && activeIndex >= 0 && activeIndex !== lastFullLyricIndex) {
+                    lastFullLyricIndex = activeIndex;
+                    const fullLyricsList = document.getElementById('full-lyrics-list');
+                    const activeLineEl = fullLyricsList?.querySelector(`.full-lyric-line[data-index="${activeIndex}"]`);
+                    if (activeLineEl) {
+                        activeLineEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
             },
 
             async updateSong(song) {
@@ -9295,6 +9311,7 @@
                     currentAudioTitle = audio.title;
                     if (audio.lyrics) {
                         currentLyrics = parseLyrics(audio.lyrics);
+                        lastFullLyricIndex = -1;
                     }
                     const playerView = document.getElementById('player-view');
                     if (playerView) {
